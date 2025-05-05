@@ -39,6 +39,42 @@
     </p>
 
     <p class="text-2xl font-bold text-red-400">600.- / nuit</p>
+    <div class="bg-white shadow-md rounded-lg p-6 sticky top-4 w-90 m-auto">
+        <div class="mb-4">
+            <h2 class="text-xl font-semibold text-gray-900 mb-2">Réserver</h2>
+            <p class="text-gray-700 mr-2"><strong>600.-</strong> / nuit</p>
+        </div>
+
+        <div class="mb-4">
+            <label for="checkin" class="block text-gray-700 text-sm font-bold mb-2">Arrivée</label>
+            <input type="date" id="checkin"
+                   class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+        </div>
+
+        <div class="mb-4">
+            <label for="checkout" class="block text-gray-700 text-sm font-bold mb-2">Départ</label>
+            <input type="date" id="checkout"
+                   class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+        </div>
+
+        <div class="mb-4">
+            <label for="guests" class="block text-gray-700 text-sm font-bold mb-2">Voyageurs</label>
+            <select id="guests"
+                    class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                <option>1</option>
+                <option>2</option>
+                <option>3</option>
+                <option>4</option>
+                <option>5</option>
+            </select>
+        </div>
+
+        <button
+            class="bg-red-500 hover:bg-red-700 text-white font-bold py-3 px-6 rounded-lg w-full focus:outline-none focus:shadow-outline"
+            type="button">
+            Réserver
+        </button>
+    </div>
 </div>
 </body>
 </html>
