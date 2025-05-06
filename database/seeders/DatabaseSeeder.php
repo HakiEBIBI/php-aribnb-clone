@@ -6,6 +6,7 @@ use App\Models\User;
 use App\Models\Apartment;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\Hash;
 
 class DatabaseSeeder extends Seeder
 {
@@ -24,7 +25,7 @@ class DatabaseSeeder extends Seeder
         User::factory()->create([
             'name' => 'haki',
             'email' => 'haki@gmail.com',
-            'password' => bcrypt('haki'),
+            'password' => Hash::make('haki'),
         ]);
 
         $this->call([

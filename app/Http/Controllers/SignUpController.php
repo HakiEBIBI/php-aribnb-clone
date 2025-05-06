@@ -18,7 +18,7 @@ class SignUpController extends Controller
             'password' => ['required'],
         ]);
 
-        $userData['password'] = bcrypt($userData['password']);
+        $userData['password'] = Hash::make($userData['password']);
 
         $user = User::create($userData);
 
