@@ -13,14 +13,18 @@ Route::get('/blog', function (\Illuminate\Http\Request $request) {
     ];
 });
 
-Route::view('/home', 'home');
+Route::view('/home', 'home')->name('home');
 
-Route::view('/sign-up', 'signup');
+Route::view('/sign-up', 'signup')->name('sign-up');
+Route::post('/sign-up', [\App\Http\Controllers\SignUpController::class, 'signup'])->name('signup');
 
-Route::view('/sign-in', 'signin');
+Route::view('/appartement-detail', 'appartement-detail')->name('apartment-detail');
 
-Route::view('/appartement-detail', 'appartement-detail');
+Route::view('/appartement-edit', 'edit-appartement')->middleware('auth');
 
-Route::view('/appartement-edit', 'edit-appartement');
+Route::view('/all-apartment', 'all-apartment')->name('all-apartment');
 
-Route::view('/all-apartment', 'all-apartment');
+Route::view('/sign-in', 'sign-in')->name('sign-in');
+Route::get('/sign-in', [\App\Http\Controllers\AuthController::class, 'login'])->name('login');
+Route::delete('/logout', [\App\Http\Controllers\AuthController::class, 'logout'])->name('logout');
+Route::post('/sign-in', [\App\Http\Controllers\AuthController::class, 'dologin']);
