@@ -21,6 +21,12 @@ class DatabaseSeeder extends Seeder
             'email' => 'test@example.com',
         ]);
 
+        User::factory()->create([
+            'name' => 'haki',
+            'email' => 'haki@gmail.com',
+            'password' => bcrypt('haki'),
+        ]);
+
         $this->call([
             ApartmentSeeder::class,
             ReservationSeeder::class
