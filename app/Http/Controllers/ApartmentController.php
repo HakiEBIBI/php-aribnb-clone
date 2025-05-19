@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\StoreApartmentRequest;
 use App\Models\Apartment;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
@@ -23,18 +24,9 @@ class ApartmentController extends Controller
         return view('new-apartment');
     }
 
-    public function store(Request $request)
+    public function store(StoreApartmentRequest $request): \Illuminate\Http\RedirectResponse
     {
-        $validated = $request->validate([
-            'title' => 'required',
-            'description' => 'required',
-            'postal_code' => 'required',
-            'price_per_night' => 'required',
-            'max_number_of_people' => 'required',
-            'address' => 'required',
-            'city' => 'required',
-            'image' => 'image|mimes:jpeg,png,jpg,svg',
-        ]);
+        $validated = $request->validated();
 
         $imagePath = $request->file('image')->store('apartments', 'public');
 
@@ -65,20 +57,11 @@ class ApartmentController extends Controller
         return view('all-apartments', compact('apartments'));
     }
 
-    public function update(Request $request, Apartment $apartment)
+    public function update(StoreApartmentRequest $request, Apartment $apartment)
     {
         $this->authorize('update', $apartment);
 
-        $validated = $request->validate([
-            'title' => 'required|string',
-            'description' => 'required|string',
-            'postal_code' => 'required|string',
-            'price_per_night' => 'required|numeric',
-            'max_number_of_people' => 'required|numeric',
-            'address' => 'required|string',
-            'city' => 'required|string',
-            'image' => 'image|mimes:jpeg,png,jpg,svg',
-        ]);
+        $validated = $request->validated();
 
         if ($request->hasFile('image')) {
             $apartment->removePhotoFromDisk();
