@@ -25,19 +25,11 @@ Route::get('/sign-in', [\App\Http\Controllers\AuthController::class, 'login'])->
 Route::post('/sign-in', [\App\Http\Controllers\AuthController::class, 'dologin']);
 Route::delete('/logout', [\App\Http\Controllers\AuthController::class, 'logout'])->name('logout');
 
-Route::get('/appartement-detail/{id}', [ApartmentController::class, 'appartementDetail'])->name('apartment.show');
-
-Route::get('/appartement-detail/edit-appartement/{apartment}', [ApartmentController::class, 'appartementEdit'])->can('update', 'apartment')->name('edit-apartment');
-Route::patch('/appartement-detail/edit-appartement/{id}', [ApartmentController::class, 'PatchApartment'])->name('PatchApartment');
-
 Route::view('/all-apartment', 'all-apartments')->name('all-apartments');
 Route::get('/all-apartements', [ApartmentController::class, 'showAll'])->name('all-apartments');
 
 Route::view('/new-apartment', 'new-apartment')->name('new-apartment')->middleware('auth');
-Route::post('/new-apartment', [\App\Http\Controllers\ApartmentController::class, 'postApartment'])->middleware('auth')->name('post-apartment');
-
-Route::delete('/appartement-detail/edit-appartement/apartment-delete/{apartment}', [ApartmentController::class, 'apartmentDelete'])
-    ->can('update', 'apartment')
-    ->name('delete-apartment');
 
 Route::get('/appartements', [ApartmentController::class, 'filter'])->name('appartements.index');
+
+Route::resource('apartments', ApartmentController::class)->middleware('auth');

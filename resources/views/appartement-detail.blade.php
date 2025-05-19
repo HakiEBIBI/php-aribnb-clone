@@ -20,7 +20,7 @@
 <div class="container mx-auto px-4 py-8 text-center">
     @auth
         @if (auth()->id() === $apartment->user_id)
-            <form action="{{ route('delete-apartment', $apartment) }}" method="POST"
+            <form action="{{ route('apartments.destroy', $apartment) }}" method="POST"
                   onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cet appartement ?');">
                 @csrf
                 @method('DELETE')
@@ -61,7 +61,7 @@
     <p class="text-2xl font-bold text-red-400 mb-5">{{ round($apartment->price_per_night) }}.- / nuit</p>
     @auth
         @if (auth()->id() === $apartment->user_id)
-            <a href="{{ route('edit-apartment', ['apartment' => $apartment->id]) }}"
+            <a href="{{ route('apartments.edit', $apartment) }}"
                class="bg-transparent hover:bg-red-400 text-red-400 font-semibold hover:text-white py-2 px-4 border border-red-400 hover:border-transparent rounded">
                 Modifier
             </a>

@@ -100,7 +100,7 @@
 
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-6">
         @forelse ($apartments as $apartment)
-            <a href="{{ route('apartment.show', $apartment->id) }}"
+            <a href="{{ route('apartments.show', $apartment) }}"
                class="block rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-shadow duration-200 ease-in-out bg-white">
                 <img class="w-full h-48 object-cover"
                      src="{{ $apartment->image ? asset('storage/' . $apartment->image) : 'https://via.placeholder.com/400x300' }}"

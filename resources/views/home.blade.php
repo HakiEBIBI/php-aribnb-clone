@@ -25,7 +25,7 @@
         <h2 class="text-3xl font-semibold text-black mb-4">Nos 3 Appartements les Plus Choisis</h2>
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
             @foreach ($topApartments as $apartment)
-                <a href="{{ route('apartment.show', ['id' => $apartment->id]) }}"
+                <a href="{{ route('apartments.show', $apartment) }}"
                    class="block rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-shadow duration-200 ease-in-out bg-white cursor-pointer">
                     <img class="w-full h-48 object-cover"
                          src="{{ asset('storage/' . $apartment->image) }}"
@@ -50,7 +50,7 @@
                     <h3 class="text-lg font-semibold text-gray-600 mb-2">Nos Suggestions à {{ $city }}</h3>
                     <div class="space-y-4">
                         @foreach ($apartments as $apartment)
-                            <a href="{{ route('apartment.show', ['id' => $apartment->id]) }}"
+                            <a href="{{ route('apartments.show', $apartment) }}"
                                class="block rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-shadow duration-200 ease-in-out bg-white cursor-pointer">
                                 <img class="w-full h-40 object-cover"
                                      src="{{ asset('storage/' . $apartment->image) }}"

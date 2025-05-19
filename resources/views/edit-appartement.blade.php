@@ -36,7 +36,7 @@
 <div class="container mx-auto py-8">
     <div class="bg-white rounded-lg shadow-md p-8">
         <h2 class="text-2xl font-semibold text-gray-900 mb-6">Modifier l'appartement</h2>
-        <form method="POST" action="{{ route('PatchApartment', ['id' => $apartment->id]) }}"
+        <form method="POST" action="{{ route('apartments.update', ['apartment' => $apartment->id]) }}"
               enctype="multipart/form-data" class="space-y-4">
             @csrf
             @method('PATCH')

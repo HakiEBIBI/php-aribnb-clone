@@ -5,58 +5,25 @@ namespace App\Http\Controllers;
 use App\Models\Apartment;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+
 
 class ApartmentController extends Controller
 {
-    //
-    public function appartementDetail($id)
+    use AuthorizesRequests;
+
+    public function index()
     {
-        $apartment = Apartment::findOrFail($id);
-
-        return view('appartement-detail', compact('apartment'));
-
+        $apartments = Apartment::orderBy('created_at', 'desc')->simplePaginate(12);
+        return view('all-apartments', compact('apartments'));
     }
 
-    public function appartementEdit(Apartment $apartment)
+    public function create()
     {
-        return view('edit-appartement', compact('apartment'));
+        return view('new-apartment');
     }
 
-    public function PatchApartment(Request $request, $id)
-    {
-        $apartment = Apartment::findOrFail($id);
-
-        $validated = $request->validate([
-            'title' => 'required|string',
-            'description' => 'required|string',
-            'postal_code' => 'required|string',
-            'price_per_night' => 'required|numeric',
-            'max_number_of_people' => 'required|numeric',
-            'address' => 'required|string',
-            'city' => 'required|string',
-            'image' => 'required|image|mimes:jpeg,png,jpg,svg',
-        ]);
-        if ($request->hasFile('image')) {
-            $this->removephoto($id);
-            $path = $request->file('image')->store('apartments', 'public');
-            $validated['image'] = $path;
-        }
-        $apartment->update($validated);
-        return redirect()->route('apartment.show', ['id' => $apartment->id])
-            ->with('success', 'Appartement mis à jour avec succès.');
-    }
-
-    private function removephoto($id)
-    {
-        $apartment = Apartment::findOrFail($id);
-
-        if ($apartment->image && Storage::disk('public')->exists($apartment->image)) {
-            Storage::disk('public')->delete($apartment->image);
-        }
-
-    }
-
-    public function postApartment(Request $request)
+    public function store(Request $request)
     {
         $validated = $request->validate([
             'title' => 'required',
@@ -68,42 +35,71 @@ class ApartmentController extends Controller
             'city' => 'required',
             'image' => 'image|mimes:jpeg,png,jpg,svg',
         ]);
+
         $imagePath = $request->file('image')->store('apartments', 'public');
 
         $apartment = new Apartment();
-        $apartment->title = $validated['title'];
-        $apartment->description = $validated['description'];
-        $apartment->postal_code = $validated['postal_code'];
-        $apartment->price_per_night = $validated['price_per_night'];
-        $apartment->max_number_of_people = $validated['max_number_of_people'];
-        $apartment->address = $validated['address'];
-        $apartment->city = $validated['city'];
+        $apartment->fill($validated);
         $apartment->image = $imagePath;
         $apartment->user_id = auth()->id();
-
         $apartment->save();
 
-        return redirect()->route('apartment.show', ['id' => $apartment->id])
+        return redirect()->route('apartments.show', $apartment)
             ->with('success', 'Appartement créé avec succès.');
     }
 
-    public function apartmentDelete(Apartment $apartment)
+    public function show(Apartment $apartment)
     {
+        return view('appartement-detail', compact('apartment'));
+    }
 
-        if ($apartment->image && Storage::disk('public')->exists($apartment->image)) {
-            Storage::disk('public')->delete($apartment->image);
-        }
-
-        $apartment->delete();
-
-        return redirect()->route('home')->with('success', 'Appartement supprimé avec succès');
-
+    public function edit(Apartment $apartment)
+    {
+        $this->authorize('update', $apartment);
+        return view('edit-appartement', compact('apartment'));
     }
 
     public function showAll()
     {
-        $apartments = Apartment::orderBy('created_at', 'desc')->simplepaginate(12);
+        $apartments = Apartment::orderBy('created_at', 'desc')->paginate(12);;
         return view('all-apartments', compact('apartments'));
+    }
+
+    public function update(Request $request, Apartment $apartment)
+    {
+        $this->authorize('update', $apartment);
+
+        $validated = $request->validate([
+            'title' => 'required|string',
+            'description' => 'required|string',
+            'postal_code' => 'required|string',
+            'price_per_night' => 'required|numeric',
+            'max_number_of_people' => 'required|numeric',
+            'address' => 'required|string',
+            'city' => 'required|string',
+            'image' => 'image|mimes:jpeg,png,jpg,svg',
+        ]);
+
+        if ($request->hasFile('image')) {
+            $apartment->removePhotoFromDisk();
+            $path = $request->file('image')->store('apartments', 'public');
+            $validated['image'] = $path;
+        }
+
+        $apartment->update($validated);
+
+        return redirect()->route('apartments.show', $apartment)
+            ->with('success', 'Appartement mis à jour avec succès.');
+    }
+
+    public function destroy(Apartment $apartment)
+    {
+        $this->authorize('update', $apartment);
+
+        $apartment->removePhotoFromDisk();
+        $apartment->delete();
+
+        return redirect()->route('apartments.index')->with('success', 'Appartement supprimé avec succès');
     }
 
     public function filter(Request $request)
