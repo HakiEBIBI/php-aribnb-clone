@@ -23,6 +23,7 @@ class ApartmentFactory extends Factory
             'title' => fake()->sentence(),
             'description' => fake()->paragraph(3),
             'address' => fake()->address(),
+            'image' => fake()->image(),
             'city' => fake()->city(),
             'postal_code' => fake()->postcode(),
             'max_number_of_people' => fake()->numberBetween(1, 10),
