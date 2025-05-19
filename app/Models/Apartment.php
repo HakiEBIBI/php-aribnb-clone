@@ -15,4 +15,6 @@ class Apartment extends Model
     {
         return $this->belongsTo(User::class);
     }
+
+    protected $fillable = ['title', 'description', 'address','postal_code', 'image', 'city', 'popularity', 'price_per_night', 'max_number_of_people'];
 }

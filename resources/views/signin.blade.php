@@ -54,7 +54,7 @@
                     </button>
                 </form>
                 <p class="text-sm font-light text-gray-500 dark:text-gray-400">
-                    vous n'avez pas encore de compte? <a href="#"
+                    vous n'avez pas encore de compte? <a href="{{ route('home') }}"
                                                          class="font-medium text-primary-600 hover:underline dark:text-primary-500">Sign
                         up</a>
                 </p>

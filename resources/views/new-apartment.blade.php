@@ -5,7 +5,7 @@
     <meta name="viewport"
           content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>edit apartment</title>
+    <title>création appartement</title>
     <!-- Styles / Scripts -->
     @if (file_exists(public_path('build/manifest.json')) || file_exists(public_path('hot')))
         @vite(['resources/css/app.css', 'resources/js/app.js'])
@@ -35,58 +35,69 @@
 @endif
 <div class="container mx-auto py-8">
     <div class="bg-white rounded-lg shadow-md p-8">
-        <h2 class="text-2xl font-semibold text-gray-900 mb-6">Modifier l'appartement</h2>
-        <form method="POST" action="{{ route('PatchApartment', ['id' => $apartment->id]) }}"
-              enctype="multipart/form-data" class="space-y-4">
+        <h2 class="text-2xl font-semibold text-gray-900 mb-6">Créer la Publication de son Appartement</h2>
+        <form method="POST" action="{{ route('post-apartment') }}" enctype="multipart/form-data" class="space-y-4">
             @csrf
-            @method('PATCH')
+
             <div>
                 <label for="nom" class="block text-gray-700 text-sm font-bold mb-2">Nom de l'appartement</label>
                 <input type="text" id="nom" name="title"
                        class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                       placeholder="Nom de l'appartement" value="{{ $apartment->title }}">
+                       placeholder="Nom de l'appartement">
             </div>
             <div>
                 <label for="adresse" class="block text-gray-700 text-sm font-bold mb-2">Adresse</label>
                 <input type="text" id="adresse" name="address"
                        class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                       placeholder="Adresse complète" value="{{ $apartment->address }}">
+                       placeholder="Adresse complète">
             </div>
             <div>
                 <label for="description" class="block text-gray-700 text-sm font-bold mb-2">Description</label>
                 <textarea id="description" rows="4" name="description"
                           class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                          placeholder="Description de l'appartement">{{ $apartment->description }}</textarea>
+                          placeholder="Description de l'appartement"></textarea>
+            </div>
+            <div>
+                <label for="code_postal" class="block text-gray-700 text-sm font-bold mb-2">Code Postal</label>
+                <input type="text" id="code_postal" name="postal_code"
+                       class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                       placeholder="code postal">
+            </div>
+            <div>
+                <label for="ville" class="block text-gray-700 text-sm font-bold mb-2">Ville</label>
+                <input type="text" id="ville" name="city"
+                       class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+                       placeholder="Votre Ville">
             </div>
             <div>
                 <label for="prix" class="block text-gray-700 text-sm font-bold mb-2">Prix par nuit (CHF)</label>
                 <input type="number" id="prix" name="price_per_night"
                        class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                       placeholder="Prix par nuit" value="{{ round($apartment->price_per_night) }}">
+                       placeholder="Prix par nuit">
             </div>
             <div>
                 <label for="nombre_de_personnes" class="block text-gray-700 text-sm font-bold mb-2">Nombre maximum de
                     personnes</label>
                 <input type="number" id="nombre_de_personnes" name="max_number_of_people"
                        class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                       placeholder="Nombre maximum de personnes" value="{{ $apartment->max_number_of_people }}">
+                       placeholder="Nombre maximum de personnes">
             </div>
             <div class="relative rounded-md shadow-sm mb-9 mt-4 ">
                 <label for="file-upload"
                        class="cursor-pointer bg-red-500 hover:bg-red-700 text-white font-semibold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
                     Choisir une image
                 </label>
-                <input id="file-upload" type="file" accept="image/*" class="sr-only" name="image"
+                <input id="file-upload" type="file" class="sr-only" name="image"
                        onchange="document.getElementById('file-name').textContent = this.files[0] ? this.files[0].name : 'Aucun fichier sélectionné'">
-                <span id="file-name" class="ml-2 text-gray-500 text-sm">{{ $apartment->image }}</span>
+                <span id="file-name" class="ml-2 text-gray-500 text-sm">Aucun fichier sélectionné</span>
             </div>
             <div class="flex items-center justify-between">
                 <button
                     class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
                     type="submit">
-                    Enregistrer les modifications
+                    publier
                 </button>
-                <a href="{{route('home')}}"
+                <a href="{{ route('home') }}"
                    class="inline-block align-baseline font-semibold text-sm text-blue-red hover:text-blue-red">
                     Annuler
                 </a>
