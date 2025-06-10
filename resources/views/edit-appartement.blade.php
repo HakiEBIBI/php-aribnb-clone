@@ -16,23 +16,8 @@
 </head>
 @include('header')
 <body class="bg-gray-100">
-@if ($errors->any())
+@include('error-and-succes-handling')
 
-    <div class="alert alert-danger">
-
-        <ul>
-
-            @foreach ($errors->all() as $error)
-
-                <li>{{ $error }}</li>
-
-            @endforeach
-
-        </ul>
-
-    </div>
-
-@endif
 <div class="container mx-auto py-8">
     <div class="bg-white rounded-lg shadow-md p-8">
         <h2 class="text-2xl font-semibold text-gray-900 mb-6">Modifier l'appartement</h2>
@@ -45,12 +30,6 @@
                 <input type="text" id="nom" name="title"
                        class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                        placeholder="Nom de l'appartement" value="{{ $apartment->title }}">
-            </div>
-            <div>
-                <label for="adresse" class="block text-gray-700 text-sm font-bold mb-2">Adresse</label>
-                <input type="text" id="adresse" name="address"
-                       class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                       placeholder="Adresse complète" value="{{ $apartment->address }}">
             </div>
             <div>
                 <label for="description" class="block text-gray-700 text-sm font-bold mb-2">Description</label>

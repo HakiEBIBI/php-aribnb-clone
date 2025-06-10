@@ -9,20 +9,24 @@ class HomeController extends Controller
 {
     public function home()
     {
-        $topApartments = Apartment::inRandomOrder()->take(3)->get();
-
-        $apartmentsByCity = Apartment::select('city')
-            ->distinct()
+        $topApartments = Apartment::withCount('reservations')
+            ->orderBy('reservations_count', 'desc')
             ->take(3)
-            ->get()
-            ->mapWithKeys(function ($item) {
-                $apartments = Apartment::where('city', $item->city)->take(2)->get();
-                return [$item->city => $apartments];
-            });
+            ->get();
 
-        return view('home', [
-            'topApartments' => $topApartments,
-            'apartmentsByCity' => $apartmentsByCity,
-        ]);
+        $allApartmentsByCity = Apartment::all()->groupBy('city');
+
+        $apartmentsByCity = collect([]);
+        $cityCount = 0;
+
+        foreach ($allApartmentsByCity as $city => $apartments) {
+            if ($cityCount >= 3) {
+                break;
+            }
+            $apartmentsByCity->put($city, $apartments->take(3));
+            $cityCount++;
+        }
+
+        return view('home', compact('topApartments', 'apartmentsByCity'));
     }
 }
