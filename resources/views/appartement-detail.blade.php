@@ -13,96 +13,201 @@
         <style>
         </style>
     @endif
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 </head>
 @include('header')
-<body>
+<body class="bg-gray-50">
+@include('error-and-succes-handling')
 
-<div class="container mx-auto px-4 py-8 text-center">
-    @auth
-        @if (auth()->id() === $apartment->user_id)
-            <form action="{{ route('apartments.destroy', $apartment) }}" method="POST"
-                  onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cet appartement ?');">
-                @csrf
-                @method('DELETE')
-                <button type="submit"
-                        class="bg-transparent hover:bg-red-400 text-red-400 font-semibold hover:text-white py-2 px-4 border border-red-400 hover:border-transparent rounded">
-                    Supprimer l'appartement
-                </button>
-            </form>
-        @endif
-    @endauth
-    <h1 class="text-3xl font-bold text-gray-800 mt-8 mb-6">{{ $apartment->title }}</h1>
-
-    <div class="flex justify-center mb-9">
-        <img class="w-96 rounded-lg shadow-md"
-             src="{{ asset('storage/' . $apartment->image) }}"
-             alt="{{ $apartment->title }}">
+<div class="max-w-6xl mx-auto px-4 py-8">
+    <div class="flex justify-end mb-6">
+        @auth
+            @if (auth()->id() === $apartment->user_id)
+                <div class="flex space-x-4">
+                    <a href="{{ route('apartments.edit', $apartment) }}"
+                       class="bg-transparent hover:bg-red-400 text-red-400 font-semibold hover:text-white py-2 px-4 border border-red-400 hover:border-transparent rounded transition duration-300 flex items-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24"
+                             stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                  d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+                        </svg>
+                        Modifier
+                    </a>
+                    <form action="{{ route('apartments.destroy', $apartment) }}" method="POST"
+                          onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cet appartement ?');">
+                        @csrf
+                        @method('DELETE')
+                        <button type="submit"
+                                class="bg-transparent hover:bg-red-400 text-red-400 font-semibold hover:text-white py-2 px-4 border border-red-400 hover:border-transparent rounded transition duration-300 flex items-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24"
+                                 stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                      d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                            </svg>
+                            Supprimer l'appartement
+                        </button>
+                    </form>
+                </div>
+            @endif
+        @endauth
     </div>
 
-    <p class="text-lg text-black mb-4">
-        {{ $apartment->description }}
-    </p>
+    <div class="flex flex-col lg:flex-row gap-8">
+        <div class="lg:w-2/3">
+            <h1 class="text-4xl font-bold text-gray-800 mb-6">{{ $apartment->title }}</h1>
 
-    <label class="font-bold "> Ville</label>
-    <p class="text-lg text-black mb-4">
-        {{ $apartment->city }}
-    </p>
+            <div class="mb-8 overflow-hidden rounded-xl shadow-lg">
+                <img class="w-full h-96 object-cover"
+                     src="{{ asset('storage/' . $apartment->image) }}"
+                     alt="{{ $apartment->title }}">
+            </div>
 
-    <label class="font-bold ">Code postal</label>
-    <p class="text-lg text-black mb-4">
-        {{ $apartment->postal_code }}
-    </p>
+            <div class="bg-white rounded-xl shadow-md p-6 mb-8">
+                <h2 class="text-2xl font-semibold text-gray-800 mb-4">Description</h2>
+                <p class="text-lg text-gray-700 leading-relaxed">
+                    {{ $apartment->description }}
+                </p>
+            </div>
 
-    <label class="font-bold">Adresse</label>
-    <p class="text-lg text-black mb-4">
-        {{ $apartment->address }}
-    </p>
+            <div class="bg-white rounded-xl shadow-md p-6">
+                <h2 class="text-2xl font-semibold text-gray-800 mb-4">Détails du logement</h2>
 
-    <p class="text-2xl font-bold text-red-400 mb-5">{{ round($apartment->price_per_night) }}.- / nuit</p>
-    @auth
-        @if (auth()->id() === $apartment->user_id)
-            <a href="{{ route('apartments.edit', $apartment) }}"
-               class="bg-transparent hover:bg-red-400 text-red-400 font-semibold hover:text-white py-2 px-4 border border-red-400 hover:border-transparent rounded">
-                Modifier
-            </a>
-        @endif
-    @endauth
-    <div class="bg-white shadow-md rounded-lg p-6 sticky top-4 w-90 m-auto mt-9">
-        <div class="mb-4">
-            <h2 class="text-xl font-semibold text-gray-900 mb-2">Réserver</h2>
-            <p class="text-gray-700 mr-2"><strong>{{ round($apartment->price_per_night) }} .-</strong> / nuit</p>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="flex items-center">
+                        <div class="bg-red-100 p-3 rounded-full mr-4">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-red-400" fill="none"
+                                 viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                      d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                      d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
+                            </svg>
+                        </div>
+                        <div>
+                            <p class="text-sm text-gray-500 font-medium">Ville</p>
+                            <p class="text-lg text-gray-800">{{ $apartment->city }}</p>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center">
+                        <div class="bg-red-100 p-3 rounded-full mr-4">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-red-400" fill="none"
+                                 viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                      d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"/>
+                            </svg>
+                        </div>
+                        <div>
+                            <p class="text-sm text-gray-500 font-medium">Code postal</p>
+                            <p class="text-lg text-gray-800">{{ $apartment->postal_code }}</p>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center">
+                        <div class="bg-red-100 p-3 rounded-full mr-4">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-red-400" fill="none"
+                                 viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                      d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
+                            </svg>
+                        </div>
+                        <div>
+                            <p class="text-sm text-gray-500 font-medium">Adresse</p>
+                            <p class="text-lg text-gray-800">{{ $apartment->address }}</p>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center">
+                        <div class="bg-red-100 p-3 rounded-full mr-4">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-red-400" fill="none"
+                                 viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                      d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/>
+                            </svg>
+                        </div>
+                        <div>
+                            <p class="text-sm text-gray-500 font-medium">Capacité</p>
+                            <p class="text-lg text-gray-800">{{ $apartment->max_number_of_people }} personnes</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
 
-        <div class="mb-4">
-            <label for="checkin" class="block text-gray-700 text-sm font-bold mb-2">Arrivée</label>
-            <input type="date" id="checkin"
-                   class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
-        </div>
+        <div class="lg:w-1/3">
+            <form method="post" action="{{ route('reservations.store') }}">
+                @csrf
+                <input type="hidden" id="apartment_id" name="apartment_id" value="{{ $apartment->id }}">
 
-        <div class="mb-4">
-            <label for="checkout" class="block text-gray-700 text-sm font-bold mb-2">Départ</label>
-            <input type="date" id="checkout"
-                   class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
-        </div>
+                <div class="bg-white shadow-lg rounded-xl p-6 sticky top-4">
+                    <div class="mb-6 flex items-center justify-between">
+                        <div>
+                            <h2 class="text-2xl font-bold text-gray-900">{{ round($apartment->price_per_night) }}.-</h2>
+                            <p class="text-gray-600">par nuit</p>
+                        </div>
+                        <div class="bg-red-100 text-red-400 px-3 py-1 rounded-full font-medium text-sm">
+                            Appartement
+                        </div>
+                    </div>
 
-        <div class="mb-4">
-            <label for="guests" class="block text-gray-700 text-sm font-bold mb-2">Voyageurs</label>
-            <select id="guests"
-                    class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
-                <option>1</option>
-                <option>2</option>
-                <option>3</option>
-                <option>4</option>
-                <option>5</option>
-            </select>
-        </div>
+                    <div class="border border-gray-200 rounded-lg overflow-hidden mb-6">
+                        <div class=" p-4">
+                            <label for="checkin"
+                                   class="block text-gray-700 text-sm font-semibold mb-1 whitespace-nowrap">
+                                Date d'arrivée et date de départ
+                            </label>
+                            <input type="text" id="checkin" name="dates"
+                                   placeholder="mettre une date"
+                                   class="w-full border border-gray-300 rounded-md p-2 focus:ring-2 focus:ring-red-500 focus:outline-none text-gray-700">
+                        </div>
+                        <div class="border-t border-gray-200 p-4">
+                            <label for="guests" class="block text-gray-700 text-sm font-semibold mb-2">Voyageurs</label>
+                            <select id="guests" name="traveler_number"
+                                    class="w-full bg-transparent border-0 p-0 focus:ring-0 text-gray-700">
+                                @for ($i = 1; $i <= $apartment->max_number_of_people; $i++)
+                                    <option value="{{ $i }}">{{ $i }}</option>
+                                @endfor
+                            </select>
+                        </div>
+                    </div>
 
-        <button
-            class="bg-red-500 hover:bg-red-700 text-white font-bold py-3 px-6 rounded-lg w-full focus:outline-none focus:shadow-outline"
-            type="button">
-            Réserver
-        </button>
+                    <button type="submit"
+                            class="bg-red-500 hover:bg-red-600 text-white font-bold py-4 px-6 rounded-lg w-full focus:outline-none focus:shadow-outline transition duration-300 flex items-center justify-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24"
+                             stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                  d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                        </svg>
+                        Réserver
+                    </button>
+                    <div class="mt-6 space-y-4">
+                        <div class="border-t border-gray-200 pt-4 flex justify-between">
+                            <p class="font-bold">Prix</p>
+                            <p class="font-bold">{{ round($apartment->price_per_night) }}.-</p>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
     </div>
 </div>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        flatpickr("#checkin", {
+            mode: "range",
+            minDate: "today",
+            dateFormat: "Y-m-d",
+            disable: [
+                    @foreach($reservations as $reservation)
+                {
+                    from: "{{ $reservation->arrival_date}}",
+                    to: "{{ $reservation->departure_date}}"
+                },
+                @endforeach
+            ]
+        });
+    });
+</script>
 </body>
 </html>

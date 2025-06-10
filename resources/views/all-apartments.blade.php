@@ -9,6 +9,8 @@
     @if (file_exists(public_path('build/manifest.json')) || file_exists(public_path('hot')))
         @vite(['resources/css/app.css', 'resources/js/app.js'])
     @endif
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 </head>
 @include('header')
 <script>
@@ -23,6 +25,8 @@
 </script>
 
 <body>
+@include('error-and-succes-handling')
+
 <div class="container mx-auto px-4 py-8">
     <div class="flex justify-between items-center mb-6">
         <h1 class="text-3xl font-semibold text-black-800">Tous nos Appartements</h1>
@@ -37,30 +41,26 @@
         <div class="space-y-4">
             <div>
                 <h3 class="text-lg font-semibold text-black mb-2">Dates</h3>
-                <div class="flex space-x-4">
-                    <div class="w-1/2">
-                        <label for="dateFrom" class="block text-gray-700 text-sm font-bold mb-2">Du</label>
-                        <input type="date" id="dateFrom" class="shadow border rounded w-full py-2 px-3 text-gray-700">
-                    </div>
-                    <div class="w-1/2">
-                        <label for="dateTo" class="block text-gray-700 text-sm font-bold mb-2">Au</label>
-                        <input type="date" id="dateTo" class="shadow border rounded w-full py-2 px-3 text-gray-700">
-                    </div>
-                </div>
             </div>
 
-            <form method="GET" action="{{ route('appartements.index') }}" class="space-y-6">
+            <form method="GET" action="{{ route('apartments.index') }}" class="space-y-6">
 
-                <!-- Ville -->
+                <div class=" p-4">
+                    <label for="checkin"
+                           class="block text-gray-700 text-sm font-semibold mb-1 whitespace-nowrap">
+                        Date d'arrivée et date de départ
+                    </label>
+                    <input type="text" id="checkin" name="dates"
+                           placeholder="mettre une date"
+                           class="w-full border border-gray-300 rounded-md p-2 focus:ring-2 focus:ring-red-500 focus:outline-none text-gray-700">
+                </div>
+
                 <div>
                     <label for="city" class="text-lg font-semibold text-black mb-2 block">Ville</label>
-                    <select id="city" name="city" class="shadow border rounded w-full py-2 px-3 text-gray-700">
-                        <option value="">-- Choisir une ville --</option>
-                        <option value="lausanne" {{ request('city') == 'lausanne' ? 'selected' : '' }}>Lausanne</option>
-                        <option value="geneve" {{ request('city') == 'geneve' ? 'selected' : '' }}>Genève</option>
-                        <option value="zurich" {{ request('city') == 'zurich' ? 'selected' : '' }}>Zurich</option>
-                        <option value="bern" {{ request('city') == 'bern' ? 'selected' : '' }}>Paris</option>
-                    </select>
+                    <div style="height: 400px" id="map"></div>
+                    <input type="hidden" name="latitude" id="latitude">
+                    <input type="hidden" name="longitude" id="longitude">
+                    <input type="hidden" name="city" id="city">
                 </div>
 
                 <div>
@@ -87,7 +87,7 @@
                         Filtrer
                     </button>
 
-                    <a href="{{ route('appartements.index') }}"
+                    <a href="{{ route('apartments.index') }}"
                        class="ml-4 text-gray-600 underline hover:text-gray-800">
                         Réinitialiser
                     </a>
@@ -118,7 +118,99 @@
             <p class="text-gray-700 col-span-full">Aucun appartement disponible.</p>
         @endforelse
     </div>
-    {{ $apartments->links() }}
+    <div class="mt-6">
+        {{ $apartments->links() }}
+    </div>
 </div>
+<script>
+    let map;
+    let marker;
+    let geocoder;
+
+    async function initMap() {
+        const initialLocation = {lat: 46.525426156486844, lng: 6.624099571477695};
+
+        map = new google.maps.Map(document.getElementById("map"), {
+            center: initialLocation,
+            zoom: 14,
+            mapId: '{{ env('GOOGLE_MAP_ID') }}',
+            zoomControl: true,
+            mapTypeControl: false,
+            scaleControl: true,
+            streetViewControl: true,
+            rotateControl: false,
+            fullscreenControl: true,
+            tilt: 45,
+            heading: 0,
+            gestureHandling: "greedy",
+            disableDefaultUI: false
+        });
+
+        geocoder = new google.maps.Geocoder();
+
+        const pinElement = new google.maps.marker.PinElement({
+            scale: 1.2,
+        });
+
+        marker = new google.maps.marker.AdvancedMarkerElement({
+            map,
+            position: initialLocation,
+            content: pinElement.element,
+            draggable: true,
+            title: "Sélectionnez un emplacement"
+        });
+
+        marker.addListener("dragend", (event) => {
+            updatePosition(marker.position);
+        });
+
+        map.addListener("click", handleMapClick);
+    }
+
+    async function handleMapClick(event) {
+        marker.position = event.latLng;
+        updatePosition(event.latLng);
+    }
+
+    async function updatePosition(position) {
+        document.getElementById("latitude").value = position.lat();
+        document.getElementById("longitude").value = position.lng();
+
+        try {
+            const response = await geocoder.geocode({location: position});
+            if (response.results[0]) {
+                const components = response.results[0].address_components;
+                const city = components.find(c => c.types.includes("locality"))?.long_name || '';
+
+                const cityInput = document.getElementById("city");
+                cityInput.value = city;
+                console.log("City updated:", city);
+            }
+        } catch (error) {
+            console.error("Geocoding failed:", error);
+        }
+    }
+</script>
+
+<script>
+    window.onload = function () {
+        const script = document.createElement("script");
+        script.src = "https://maps.googleapis.com/maps/api/js?key={{ env('GOOGLE_API_KEY') }}&libraries=places,marker&callback=initMap&v=beta";
+        script.async = true;
+        script.defer = true;
+        document.head.appendChild(script);
+    };
+</script>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        flatpickr("#checkin", {
+            mode: "range",
+            minDate: "today",
+            dateFormat: "Y-m-d",
+        });
+    });
+</script>
+
 </body>
 </html>

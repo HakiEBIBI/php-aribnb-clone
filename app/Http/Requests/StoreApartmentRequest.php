@@ -11,7 +11,7 @@ class StoreApartmentRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -24,11 +24,13 @@ class StoreApartmentRequest extends FormRequest
         return [
             'title' => 'required|string',
             'description' => 'required|string',
-            'postal_code' => 'required|string',
             'price_per_night' => 'required|numeric',
             'max_number_of_people' => 'required|numeric',
+            'latitude' => 'required|numeric',
+            'longitude' => 'required|numeric',
             'address' => 'required|string',
             'city' => 'required|string',
+            'postal_code' => 'required|string',
             'image' => 'image|mimes:jpeg,png,jpg,svg',
         ];
     }

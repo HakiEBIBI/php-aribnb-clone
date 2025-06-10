@@ -1,13 +1,13 @@
 <header class="text-lg">
     <div class="flex place-items-center content-center  justify-between mt-2 mb-6">
         <div class="ml-8 flex gap-10">
-            <a href="/home"
+            <a href="{{route('home')}}"
                class="px-4 py-2 rounded-full text-red-400 hover:bg-gray-100 hover:font-medium transition duration-200 ease-in-out">
                 Accueil</a>
-            <a href="{{route('all-apartments')}}"
+            <a href="{{route('apartments.index')}}"
                class="px-4 py-2 rounded-full text-red-400 hover:bg-gray-100 hover:font-medium transition duration-200 ease-in-out">
                 tout les appartements</a>
-            <a href="/new-apartment"
+            <a href="{{route('apartments.create')}}"
                class="px-4 py-2 rounded-full text-red-400 hover:bg-gray-100 hover:font-medium transition duration-200 ease-in-out">
                 nouvel appartement</a>
 

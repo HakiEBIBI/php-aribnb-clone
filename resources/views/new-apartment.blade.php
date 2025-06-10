@@ -1,4 +1,6 @@
 <!doctype html>
+<script
+    src="https://maps.googleapis.com/maps/api/js?key={{ env('GOOGLE_API_KEY') }}&libraries=places,maps,marker,geocoding&v=weekly"></script>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -16,23 +18,8 @@
 </head>
 @include('header')
 <body class="bg-gray-100">
-@if ($errors->any())
+@include('error-and-succes-handling')
 
-    <div class="alert alert-danger">
-
-        <ul>
-
-            @foreach ($errors->all() as $error)
-
-                <li>{{ $error }}</li>
-
-            @endforeach
-
-        </ul>
-
-    </div>
-
-@endif
 <div class="container mx-auto py-8">
     <div class="bg-white rounded-lg shadow-md p-8">
         <h2 class="text-2xl font-semibold text-gray-900 mb-6">Créer la Publication de son Appartement</h2>
@@ -45,30 +32,24 @@
                        class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                        placeholder="Nom de l'appartement">
             </div>
-            <div>
-                <label for="adresse" class="block text-gray-700 text-sm font-bold mb-2">Adresse</label>
-                <input type="text" id="adresse" name="address"
-                       class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                       placeholder="Adresse complète">
-            </div>
+
             <div>
                 <label for="description" class="block text-gray-700 text-sm font-bold mb-2">Description</label>
                 <textarea id="description" rows="4" name="description"
                           class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
                           placeholder="Description de l'appartement"></textarea>
             </div>
-            <div>
-                <label for="code_postal" class="block text-gray-700 text-sm font-bold mb-2">Code Postal</label>
-                <input type="text" id="code_postal" name="postal_code"
-                       class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                       placeholder="code postal">
+
+            <div class="mb-4">
+                <label class="block text-gray-700 text-sm font-bold mb-2">Location</label>
+                <div style="height: 800px" id="map"></div>
+                <input type="hidden" name="latitude" id="latitude">
+                <input type="hidden" name="longitude" id="longitude">
+                <input type="hidden" name="address" id="address">
+                <input type="hidden" name="city" id="city">
+                <input type="hidden" name="postal_code" id="postal_code">
             </div>
-            <div>
-                <label for="ville" class="block text-gray-700 text-sm font-bold mb-2">Ville</label>
-                <input type="text" id="ville" name="city"
-                       class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                       placeholder="Votre Ville">
-            </div>
+
             <div>
                 <label for="prix" class="block text-gray-700 text-sm font-bold mb-2">Prix par nuit (CHF)</label>
                 <input type="number" id="prix" name="price_per_night"
@@ -105,4 +86,66 @@
         </form>
     </div>
 </div>
+<script>
+    let map;
+    let marker;
+    let geocoder;
+
+    function initMap() {
+        const initialLocation = {lat: 46.525426156486844, lng: 6.624099571477695};
+
+        map = new google.maps.Map(document.getElementById("map"), {
+            center: initialLocation,
+            zoom: 14,
+        });
+
+        geocoder = new google.maps.Geocoder();
+
+        marker = new google.maps.Marker({
+            position: initialLocation,
+            map: map,
+            visible: true,
+            draggable: true,
+            animation: google.maps.Animation.DROP
+        });
+
+        map.addListener("click", handleMapClick);
+    }
+
+    async function handleMapClick(event) {
+        const latLng = event.latLng;
+
+        marker.setPosition(latLng);
+        marker.setVisible(true);
+
+        document.getElementById("latitude").value = latLng.lat();
+        document.getElementById("longitude").value = latLng.lng();
+
+        try {
+            const response = await geocoder.geocode({location: latLng});
+            if (response.results[0]) {
+                const components = response.results[0].address_components;
+
+                const street = components.find(c => c.types.includes("route"))?.long_name || '';
+                const streetNumber = components.find(c => c.types.includes("street_number"))?.long_name || '';
+                const city = components.find(c => c.types.includes("locality"))?.long_name || '';
+                const postalCode = components.find(c => c.types.includes("postal_code"))?.long_name || '';
+
+                document.getElementById("address").value = `${streetNumber} ${street}`.trim() || '';
+                document.getElementById("city").value = city || '';
+                document.getElementById("postal_code").value = postalCode || '';
+            }
+        } catch (error) {
+            console.error('Erreur de géocodage:', error);
+        }
+    }
+
+    window.onload = function () {
+        const script = document.createElement("script");
+        script.src = "https://maps.googleapis.com/maps/api/js?key={{ env('GOOGLE_API_KEY') }}&libraries=places&callback=initMap";
+        script.async = true;
+        script.defer = true;
+        document.head.appendChild(script);
+    };
+</script>
 </body>

@@ -20,6 +20,8 @@
 @include('header')
 
 <body>
+@include('error-and-succes-handling')
+
 <div class="container mx-auto px-4 py-8">
     <section class="mb-12">
         <h2 class="text-3xl font-semibold text-black mb-4">Nos 3 Appartements les Plus Choisis</h2>
