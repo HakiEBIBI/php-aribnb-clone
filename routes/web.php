@@ -21,6 +21,5 @@ Route::delete('/logout', [AuthController::class, 'logout'])->name('logout');
 Route::middleware('auth')->group(function () {
     Route::resource('apartments', ApartmentController::class);
     Route::resource('reservations', ReservationController::class);
-    Route::get('reservations/{id}/edit', [ReservationController::class, 'edit'])->name('reservations-edit');
-    Route::get('/accountDetail', [ProfileController::class, 'show'])->name('accountDetail');
+    Route::get('/accountDetail', [ProfileController::class, 'show'])->middleware('auth')->name('accountDetail');
 });

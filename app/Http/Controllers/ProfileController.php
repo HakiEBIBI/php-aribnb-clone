@@ -10,7 +10,6 @@ class ProfileController extends Controller
 
     public function show()
     {
-        $user = Auth::user();
 
         if (!$user) {
             abort(403, 'Unauthorized');

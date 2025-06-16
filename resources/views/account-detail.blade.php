@@ -66,7 +66,7 @@
                                     <p>Au: {{ $reservation->departure_date }}</p>
                                 </div>
                                 <div class="flex gap-2 mt-2">
-                                    <a href="{{ route('reservations-edit', $reservation->id) }}"
+                                    <a href="{{ route('reservations.show', $reservation->id) }}"
                                        class="text-red-500 hover:text-red-700 text-xs">
                                         <span class="flex items-center">
                                             <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor"

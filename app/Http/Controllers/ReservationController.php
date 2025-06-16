@@ -6,6 +6,7 @@ use App\Http\Requests\StoreReservationRequest;
 use App\Models\Apartment;
 use App\Models\Reservation;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
 
 class ReservationController extends Controller
 {
@@ -32,8 +33,7 @@ class ReservationController extends Controller
     {
         $validated = $request->validated();
 
-        $apartment = Apartment::findOrFail($request->input('apartment_id'));
-        $apartment->reservations()->create([
+        $validated->reservations()->create([
             'user_id' => auth()->id(),
             'arrival_date' => $validated['arrival_date'],
             'departure_date' => $validated['departure_date'],
@@ -47,25 +47,12 @@ class ReservationController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show(Reservation $reservation)
     {
-        //
-    }
+        Gate::authorize('manage-reservation', $reservation);
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
-    {
-        $reservation = Reservation::findOrFail($id);
-
-        if ($reservation->user_id !== auth()->id()) {
-            abort(403);
-        }
-
-        // Get other reservations for this apartment to disable dates
         $otherReservations = Reservation::where('apartment_id', $reservation->apartment_id)
-            ->where('id', '!=', $id)
+            ->where('id', '!=', $reservation->id)
             ->get();
 
         return view('reservations-edit', [
@@ -73,18 +60,24 @@ class ReservationController extends Controller
             'apartment' => $reservation->apartment,
             'otherReservations' => $otherReservations
         ]);
+
+    }
+
+    /**
+     * Show the form for editing the specified resource.
+     */
+    public function edit(Reservation $reservation)
+    {
+        //
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(Request $request, Reservation $reservation)
     {
-        $reservation = Reservation::findOrFail($id);
 
-        if ($reservation->user_id !== auth()->id()) {
-            abort(403);
-        }
+        Gate::authorize('manage-reservation', $reservation);
 
         $validated = $request->validate([
             'dates' => 'required|string',
@@ -108,13 +101,10 @@ class ReservationController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy(Reservation $reservation)
     {
-        $reservation = Reservation::findOrFail($id);
 
-        if ($reservation->user_id !== auth()->id()) {
-            abort(403);
-        }
+        Gate::authorize('manage-reservation', $reservation);
 
         $reservation->delete();
 
@@ -122,8 +112,4 @@ class ReservationController extends Controller
             ->with('success', 'Réservation supprimer avec succès.');
     }
 
-    public function disableDatePicker()
-    {
-        $reservations = Reservation::where('apartment_id');
-    }
 }
