@@ -57,7 +57,22 @@ class ReservationController extends Controller
      */
     public function edit(string $id)
     {
-        //
+        $reservation = Reservation::findOrFail($id);
+
+        if ($reservation->user_id !== auth()->id()) {
+            abort(403);
+        }
+
+        // Get other reservations for this apartment to disable dates
+        $otherReservations = Reservation::where('apartment_id', $reservation->apartment_id)
+            ->where('id', '!=', $id)
+            ->get();
+
+        return view('reservations-edit', [
+            'reservation' => $reservation,
+            'apartment' => $reservation->apartment,
+            'otherReservations' => $otherReservations
+        ]);
     }
 
     /**
@@ -65,7 +80,29 @@ class ReservationController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
+        $reservation = Reservation::findOrFail($id);
+
+        if ($reservation->user_id !== auth()->id()) {
+            abort(403);
+        }
+
+        $validated = $request->validate([
+            'dates' => 'required|string',
+            'traveler_number' => 'required|integer|min:1'
+        ]);
+
+        $dates = explode(' to ', $validated['dates']);
+        $arrival_date = $dates[0];
+        $departure_date = $dates[1];
+
+        $reservation->update([
+            'arrival_date' => $arrival_date,
+            'departure_date' => $departure_date,
+            'traveler_number' => $validated['traveler_number']
+        ]);
+
+        return redirect()->route('accountDetail')
+            ->with('success', 'Réservation modifiée avec succès.');
     }
 
     /**
@@ -73,11 +110,20 @@ class ReservationController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        $reservation = Reservation::findOrFail($id);
+
+        if ($reservation->user_id !== auth()->id()) {
+            abort(403);
+        }
+
+        $reservation->delete();
+
+        return redirect()->route('accountDetail')
+            ->with('success', 'Réservation supprimer avec succès.');
     }
 
     public function disableDatePicker()
     {
-        $reservations = Reservation::where('apartment_id', );
+        $reservations = Reservation::where('apartment_id');
     }
 }
