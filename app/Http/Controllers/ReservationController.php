@@ -33,7 +33,9 @@ class ReservationController extends Controller
     {
         $validated = $request->validated();
 
-        $validated->reservations()->create([
+        $apartment = \App\Models\Apartment::findOrFail($validated['apartment_id']);
+
+        $apartment->reservations()->create([
             'user_id' => auth()->id(),
             'arrival_date' => $validated['arrival_date'],
             'departure_date' => $validated['departure_date'],

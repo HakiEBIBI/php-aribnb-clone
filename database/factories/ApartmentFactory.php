@@ -17,17 +17,15 @@ class ApartmentFactory extends Factory
      */
     public function definition(): array
     {
-        // get user
-
         return [
-            'title' => fake()->sentence(),
-            'description' => fake()->paragraph(3),
-            'address' => fake()->address(),
-            'image' => fake()->image(),
-            'city' => fake()->city(),
-            'postal_code' => fake()->postcode(),
-            'max_number_of_people' => fake()->numberBetween(1, 10),
-            'price_per_night' => fake()->randomFloat(2, 50, 500),
+            'title' => $this->faker->sentence,
+            'description' => $this->faker->paragraph,
+            'address' => $this->faker->address,
+            'city' => $this->faker->city,
+            'postal_code' => $this->faker->postcode,
+            'max_number_of_people' => $this->faker->numberBetween(1, 10),
+            'price_per_night' => $this->faker->randomFloat(2, 50, 500),
+            'user_id' => User::factory(),
         ];
     }
 }

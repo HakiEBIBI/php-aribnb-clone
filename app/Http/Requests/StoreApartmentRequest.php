@@ -31,7 +31,8 @@ class StoreApartmentRequest extends FormRequest
             'address' => 'required|string',
             'city' => 'required|string',
             'postal_code' => 'required|string',
-            'image' => 'image|mimes:jpeg,png,jpg,svg',
+            'images' => 'nullable|array',
+            'images.*' => 'image|mimes:jpeg,png,jpg,svg',
         ];
     }
 }

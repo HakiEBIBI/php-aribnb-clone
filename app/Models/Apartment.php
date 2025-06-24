@@ -13,7 +13,6 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  */
 class Apartment extends Model
 {
-    /** @use HasFactory<\Database\Factories\ApartmentFactory> */
     use HasFactory;
 
     public function user(): BelongsTo
@@ -26,13 +25,10 @@ class Apartment extends Model
         return $this->hasMany(Reservation::class);
     }
 
-    protected $fillable = ['title', 'description', 'address', 'postal_code', 'image', 'city', 'popularity', 'price_per_night', 'max_number_of_people'];
-
-    public function removePhotoFromDisk()
+    public function images(): HasMany
     {
-        if ($this->image && Storage::disk('public')->exists($this->image)) {
-            Storage::disk('public')->delete($this->image);
-            $this->image = null;
-        }
+        return $this->hasMany(\App\Models\Image::class);
     }
+
+    protected $fillable = ['title', 'description', 'address', 'postal_code', 'city', 'popularity', 'price_per_night', 'max_number_of_people'];
 }

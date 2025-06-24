@@ -15,6 +15,8 @@
     @endif
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <link href="https://cdn.jsdelivr.net/npm/flowbite@3.1.2/dist/flowbite.min.css" rel="stylesheet"/>
+    <script src="https://flowbite.com/docs/flowbite.min.js"></script>
 </head>
 @include('header')
 <body class="bg-gray-50">
@@ -58,9 +60,52 @@
             <h1 class="text-4xl font-bold text-gray-800 mb-6">{{ $apartment->title }}</h1>
 
             <div class="mb-8 overflow-hidden rounded-xl shadow-lg">
-                <img class="w-full h-96 object-cover"
-                     src="{{ asset('storage/' . $apartment->image) }}"
-                     alt="{{ $apartment->title }}">
+                <div id="apartment-carousel" class="relative w-full mb-10" data-carousel="slide">
+                    <!-- Carousel wrapper -->
+                    <div class="relative h-96 overflow-hidden rounded-lg">
+                        @foreach($apartment->images as $index => $image)
+                            <div class="hidden duration-700 ease-in-out {{ $index === 0 ? 'block' : '' }}" data-carousel-item>
+                                <img src="{{ asset('storage/' . $image->path) }}"
+                                     alt="Image {{ $index + 1 }}"
+                                     class="absolute block w-full h-full object-cover top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2" />
+                            </div>
+                        @endforeach
+                    </div>
+
+                    <!-- Slider indicators -->
+                    <div class="absolute z-30 flex space-x-3 -translate-x-1/2 bottom-5 left-1/2 rtl:space-x-reverse">
+                        @foreach($apartment->images as $index => $image)
+                            <button type="button"
+                                    class="w-3 h-3 rounded-full"
+                                    aria-current="{{ $index === 0 ? 'true' : 'false' }}"
+                                    aria-label="Slide {{ $index + 1 }}"
+                                    data-carousel-slide-to="{{ $index }}">
+                            </button>
+                        @endforeach
+                    </div>
+
+                    <!-- Slider controls -->
+                    <button type="button"
+                            class="absolute top-0 start-0 z-30 flex items-center justify-center h-full px-4 cursor-pointer group focus:outline-none"
+                            data-carousel-prev>
+        <span class="inline-flex items-center justify-center w-10 h-10 rounded-full bg-white/30 group-hover:bg-white/50 group-focus:ring-4 group-focus:ring-white group-focus:outline-none">
+            <svg class="w-4 h-4 text-white rtl:rotate-180" fill="none" stroke="currentColor" viewBox="0 0 6 10">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 1 1 5l4 4"/>
+            </svg>
+            <span class="sr-only">Previous</span>
+        </span>
+                    </button>
+                    <button type="button"
+                            class="absolute top-0 end-0 z-30 flex items-center justify-center h-full px-4 cursor-pointer group focus:outline-none"
+                            data-carousel-next>
+        <span class="inline-flex items-center justify-center w-10 h-10 rounded-full bg-white/30 group-hover:bg-white/50 group-focus:ring-4 group-focus:ring-white group-focus:outline-none">
+            <svg class="w-4 h-4 text-white rtl:rotate-180" fill="none" stroke="currentColor" viewBox="0 0 6 10">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 9 4-4-4-4"/>
+            </svg>
+            <span class="sr-only">Next</span>
+        </span>
+                    </button>
+                </div>
             </div>
 
             <div class="bg-white rounded-xl shadow-md p-6 mb-8">
@@ -74,10 +119,10 @@
                 <h2 class="text-2xl font-semibold text-gray-800 mb-4">Détails du logement</h2>
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- Ville -->
                     <div class="flex items-center">
                         <div class="bg-red-100 p-3 rounded-full mr-4">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-red-400" fill="none"
-                                 viewBox="0 0 24 24" stroke="currentColor">
+                            <svg class="h-6 w-6 text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                       d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -92,8 +137,7 @@
 
                     <div class="flex items-center">
                         <div class="bg-red-100 p-3 rounded-full mr-4">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-red-400" fill="none"
-                                 viewBox="0 0 24 24" stroke="currentColor">
+                            <svg class="h-6 w-6 text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                       d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"/>
                             </svg>
@@ -106,8 +150,7 @@
 
                     <div class="flex items-center">
                         <div class="bg-red-100 p-3 rounded-full mr-4">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-red-400" fill="none"
-                                 viewBox="0 0 24 24" stroke="currentColor">
+                            <svg class="h-6 w-6 text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                       d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
                             </svg>
@@ -120,8 +163,7 @@
 
                     <div class="flex items-center">
                         <div class="bg-red-100 p-3 rounded-full mr-4">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-red-400" fill="none"
-                                 viewBox="0 0 24 24" stroke="currentColor">
+                            <svg class="h-6 w-6 text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                       d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/>
                             </svg>
@@ -138,7 +180,7 @@
         <div class="lg:w-1/3">
             <form method="post" action="{{ route('reservations.store') }}">
                 @csrf
-                <input type="hidden" id="apartment_id" name="apartment_id" value="{{ $apartment->id }}">
+                <input type="hidden" name="apartment_id" value="{{ $apartment->id }}">
 
                 <div class="bg-white shadow-lg rounded-xl p-6 sticky top-4">
                     <div class="mb-6 flex items-center justify-between">
@@ -152,13 +194,9 @@
                     </div>
 
                     <div class="border border-gray-200 rounded-lg overflow-hidden mb-6">
-                        <div class=" p-4">
-                            <label for="checkin"
-                                   class="block text-gray-700 text-sm font-semibold mb-1 whitespace-nowrap">
-                                Date d'arrivée et date de départ
-                            </label>
-                            <input type="text" id="checkin" name="dates"
-                                   placeholder="mettre une date"
+                        <div class="p-4">
+                            <label for="checkin" class="block text-gray-700 text-sm font-semibold mb-1">Date d'arrivée et départ</label>
+                            <input type="text" id="checkin" name="dates" placeholder="mettre une date"
                                    class="w-full border border-gray-300 rounded-md p-2 focus:ring-2 focus:ring-red-500 focus:outline-none text-gray-700">
                         </div>
                         <div class="border-t border-gray-200 p-4">
@@ -174,13 +212,13 @@
 
                     <button type="submit"
                             class="bg-red-500 hover:bg-red-600 text-white font-bold py-4 px-6 rounded-lg w-full focus:outline-none focus:shadow-outline transition duration-300 flex items-center justify-center">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24"
-                             stroke="currentColor">
+                        <svg class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                   d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
                         </svg>
                         Réserver
                     </button>
+
                     <div class="mt-6 space-y-4">
                         <div class="border-t border-gray-200 pt-4 flex justify-between">
                             <p class="font-bold">Prix</p>
@@ -192,6 +230,7 @@
         </div>
     </div>
 </div>
+
 <script>
     document.addEventListener("DOMContentLoaded", function () {
         flatpickr("#checkin", {
@@ -201,8 +240,8 @@
             disable: [
                     @foreach($reservations as $reservation)
                 {
-                    from: "{{ $reservation->arrival_date}}",
-                    to: "{{ $reservation->departure_date}}"
+                    from: "{{ $reservation->arrival_date }}",
+                    to: "{{ $reservation->departure_date }}"
                 },
                 @endforeach
             ]

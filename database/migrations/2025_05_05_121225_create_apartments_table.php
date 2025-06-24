@@ -15,7 +15,6 @@ return new class extends Migration {
             $table->foreignId('user_id')->constrained('users');
             $table->string('title');
             $table->text('description');
-            $table->string('image');
             $table->string('address');
             $table->string('city');
             $table->string('postal_code');
