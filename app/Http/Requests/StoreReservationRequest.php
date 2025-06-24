@@ -22,6 +22,7 @@ class StoreReservationRequest extends FormRequest
     public function rules(): array
     {
         return [
+            'apartment_id' => 'required|exists:apartments,id',
             'arrival_date' => 'required|date|after:tomorrow',
             'departure_date' => 'required|date|after:arrival_date',
             'traveler_number' => 'required|integer',

@@ -23,9 +23,9 @@ class ApartmentController extends Controller
             $departure_date = $dateparts[1] ?? null;
 
             if ($arrival_date && $departure_date) {
-                $query->whereDoesntHave('reservations', function($q) use ($arrival_date, $departure_date) {
-                    $q->where(function($q) use ($arrival_date, $departure_date) {
-                        $q->where(function($q) use ($arrival_date, $departure_date) {
+                $query->whereDoesntHave('reservations', function ($q) use ($arrival_date, $departure_date) {
+                    $q->where(function ($q) use ($arrival_date, $departure_date) {
+                        $q->where(function ($q) use ($arrival_date, $departure_date) {
                             $q->where('arrival_date', '<=', $departure_date)
                                 ->where('departure_date', '>=', $arrival_date);
                         });
@@ -57,13 +57,18 @@ class ApartmentController extends Controller
     public function store(StoreApartmentRequest $request): \Illuminate\Http\RedirectResponse
     {
         $validated = $request->validated();
-        $imagePath = $request->file('image')->store('apartments', 'public');
 
         $apartment = new Apartment();
         $apartment->fill($validated);
-        $apartment->image = $imagePath;
         $apartment->user_id = auth()->id();
         $apartment->save();
+
+        if ($request->hasFile('images')) {
+            foreach ($request->file('images') as $imageFile) {
+                $imagePath = $imageFile->store('apartments', 'public');
+                $apartment->images()->create(['path' => $imagePath]);
+            }
+        }
 
         return redirect()->route('apartments.show', $apartment)
             ->with('success', 'Appartement créé avec succès.');
@@ -90,16 +95,17 @@ class ApartmentController extends Controller
             'description' => ['required', 'string'],
             'price_per_night' => ['required', 'integer'],
             'max_number_of_people' => ['required', 'integer'],
-            'image' => ['image', 'mimes:jpeg,png,jpg,gif,svg'],
+            'images.*' => ['image', 'mimes:jpeg,png,jpg,gif,svg'],
         ]);
 
-        if ($request->hasFile('image')) {
-            $apartment->removePhotoFromDisk();
-            $path = $request->file('image')->store('apartments', 'public');
-            $validated['image'] = $path;
-        }
-
         $apartment->update($validated);
+
+        if ($request->hasFile('images')) {
+            foreach ($request->file('images') as $imageFile) {
+                $imagePath = $imageFile->store('apartments', 'public');
+                $apartment->images()->create(['path' => $imagePath]);
+            }
+        }
 
         return redirect()->route('apartments.show', $apartment)
             ->with('success', 'Appartement mis à jour avec succès.');

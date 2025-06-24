@@ -64,13 +64,45 @@
                        placeholder="Nombre maximum de personnes">
             </div>
             <div class="relative rounded-md shadow-sm mb-9 mt-4 ">
-                <label for="file-upload"
-                       class="cursor-pointer bg-red-500 hover:bg-red-700 text-white font-semibold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
-                    Choisir une image
-                </label>
-                <input id="file-upload" type="file" class="sr-only" name="image"
-                       onchange="document.getElementById('file-name').textContent = this.files[0] ? this.files[0].name : 'Aucun fichier sélectionné'">
-                <span id="file-name" class="ml-2 text-gray-500 text-sm">Aucun fichier sélectionné</span>
+                <div id="image-inputs">
+                    <div class="relative rounded-md shadow-sm mb-4 mt-4">
+                        <label class="cursor-pointer bg-red-500 hover:bg-red-700 text-white font-semibold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
+                            Choisir une image
+                            <input type="file" name="images[]" class="sr-only" onchange="showAddButton(this)">
+                        </label>
+                        <span class="ml-2 text-gray-500 text-sm">Aucun fichier sélectionné</span>
+                    </div>
+                </div>
+
+                <script>
+                    function showAddButton(input) {
+                        input.parentElement.nextElementSibling.textContent = input.files[0]?.name || 'Aucun fichier sélectionné';
+
+                        if (!input.closest('.relative').nextElementSibling ||
+                            !input.closest('.relative').nextElementSibling.classList.contains('add-image-btn')) {
+                            const btn = document.createElement('button');
+                            btn.type = 'button';
+                            btn.textContent = 'Ajouter une autre image';
+                            btn.className = 'add-image-btn bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded mt-2 mb-4';
+                            btn.onclick = addImageInput;
+                            input.closest('.relative').after(btn);
+                        }
+                    }
+
+                    function addImageInput() {
+                        const container = document.getElementById('image-inputs');
+                        const div = document.createElement('div');
+                        div.className = 'relative rounded-md shadow-sm mb-4 mt-4';
+                        div.innerHTML = `
+        <label class="cursor-pointer bg-red-500 hover:bg-red-700 text-white font-semibold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
+            Choisir une image
+            <input type="file" name="images[]" class="sr-only" onchange="showAddButton(this)">
+        </label>
+        <span class="ml-2 text-gray-500 text-sm">Aucun fichier sélectionné</span>
+    `;
+                        container.appendChild(div);
+                    }
+                </script>
             </div>
             <div class="flex items-center justify-between">
                 <button

@@ -11,6 +11,8 @@
     @endif
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <link href="https://cdn.jsdelivr.net/npm/flowbite@3.1.2/dist/flowbite.min.css" rel="stylesheet"/>
+    <script src="https://flowbite.com/docs/flowbite.min.js"></script>
 </head>
 @include('header')
 <script>
@@ -102,9 +104,41 @@
         @forelse ($apartments as $apartment)
             <a href="{{ route('apartments.show', $apartment) }}"
                class="block rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-shadow duration-200 ease-in-out bg-white">
-                <img class="w-full h-48 object-cover"
-                     src="{{ $apartment->image ? asset('storage/' . $apartment->image) : 'https://via.placeholder.com/400x300' }}"
-                     alt="{{ $apartment->title }}">
+                <div id="carousel-{{ $apartment->id }}" class="relative w-full h-48" data-carousel="slide">
+                    <div class="relative h-48 overflow-hidden rounded-lg">
+                        @foreach($apartment->images as $index => $image)
+                            <div class="{{ $index === 0 ? '' : 'hidden' }} duration-700 ease-in-out" data-carousel-item>
+                                <img src="{{ asset('storage/' . $image->path) }}"
+                                     class="absolute block w-full h-full object-cover"
+                                     alt="Apartment image {{ $index + 1 }}"/>
+                            </div>
+                        @endforeach
+                    </div>
+                    <div class="absolute z-30 flex space-x-3 -translate-x-1/2 bottom-2 left-1/2">
+                        @foreach($apartment->images as $index => $image)
+                            <button type="button" class="w-3 h-3 rounded-full" aria-label="Slide {{ $index + 1 }}"
+                                    data-carousel-slide-to="{{ $index }}"></button>
+                        @endforeach
+                    </div>
+                    <button type="button"
+                            class="absolute top-0 left-0 z-30 flex items-center justify-center h-full px-2 cursor-pointer group focus:outline-none"
+                            data-carousel-prev>
+        <span class="inline-flex items-center justify-center w-8 h-8 rounded-full bg-white/30 group-hover:bg-white/50">
+            <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+            </svg>
+        </span>
+                    </button>
+                    <button type="button"
+                            class="absolute top-0 right-0 z-30 flex items-center justify-center h-full px-2 cursor-pointer group focus:outline-none"
+                            data-carousel-next>
+        <span class="inline-flex items-center justify-center w-8 h-8 rounded-full bg-white/30 group-hover:bg-white/50">
+            <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+            </svg>
+        </span>
+                    </button>
+                </div>
                 <div class="p-4">
                     <h3 class="text-lg font-semibold text-gray-900 mb-2">{{ $apartment->title }}</h3>
                     <p class="text-sm text-gray-600 mb-2">
@@ -133,7 +167,7 @@
         map = new google.maps.Map(document.getElementById("map"), {
             center: initialLocation,
             zoom: 14,
-            mapId: '{{ env('GOOGLE_MAP_ID') }}',
+            mapId: '{{ env('GOOGLE_API_KEY') }}',
             zoomControl: true,
             mapTypeControl: false,
             scaleControl: true,
