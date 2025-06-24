@@ -35,7 +35,7 @@
                 <a href="{{ route('apartments.create') }}"
                    class="bg-red-500 text-white px-3 py-1 rounded text-sm hover:bg-red-600">
                     + Ajouter
-                </a>
+                </a>1oerai
             </div>
             <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
                 @forelse($apartments as $apartment)

@@ -3,10 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreReservationRequest;
+use App\Mail\MailReservation;
 use App\Models\Apartment;
 use App\Models\Reservation;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\Mail;
 
 class ReservationController extends Controller
 {
@@ -32,15 +34,24 @@ class ReservationController extends Controller
     public function store(StoreReservationRequest $request)
     {
         $validated = $request->validated();
+        $apartment = Apartment::findOrFail($validated['apartment_id']);
 
-        $apartment = \App\Models\Apartment::findOrFail($validated['apartment_id']);
-
-        $apartment->reservations()->create([
+        $reservation = $apartment->reservations()->create([
             'user_id' => auth()->id(),
             'arrival_date' => $validated['arrival_date'],
             'departure_date' => $validated['departure_date'],
             'traveler_number' => $validated['traveler_number'],
         ]);
+
+        Mail::to(auth()->user()->email)->send(
+            new MailReservation(
+                auth()->user()->name,
+                'created',
+                $apartment->title,
+                $reservation->arrival_date,
+                $reservation->departure_date
+            )
+        );
 
         return redirect()->route('apartments.index')
             ->with('success', 'Vous avez créé une nouvelle reservation.');
@@ -78,7 +89,6 @@ class ReservationController extends Controller
      */
     public function update(Request $request, Reservation $reservation)
     {
-
         Gate::authorize('manage-reservation', $reservation);
 
         $validated = $request->validate([
@@ -96,6 +106,16 @@ class ReservationController extends Controller
             'traveler_number' => $validated['traveler_number']
         ]);
 
+        Mail::to(auth()->user()->email)->send(
+            new MailReservation(
+                auth()->user()->name,
+                'updated',
+                $reservation->apartment->title,
+                $arrival_date,
+                $departure_date
+            )
+        );
+
         return redirect()->route('accountDetail')
             ->with('success', 'Réservation modifiée avec succès.');
     }
@@ -105,10 +125,24 @@ class ReservationController extends Controller
      */
     public function destroy(Reservation $reservation)
     {
-
         Gate::authorize('manage-reservation', $reservation);
 
+        $user = auth()->user();
+        $apartment = $reservation->apartment;
+        $arrival_date = $reservation->arrival_date;
+        $departure_date = $reservation->departure_date;
+
         $reservation->delete();
+
+        Mail::to($user->email)->send(
+            new MailReservation(
+                $user->name,
+                'deleted',
+                $apartment->title,
+                $arrival_date,
+                $departure_date
+            )
+        );
 
         return redirect()->route('accountDetail')
             ->with('success', 'Réservation supprimer avec succès.');
