@@ -22,7 +22,10 @@ class MailReservation extends Mailable
         public string $action,
         public string $apartmentTitle,
         public string $arrival_date,
-        public string $departure_date
+        public string $departure_date,
+        public $apartment,
+        public float $total_price,
+        public $reservation
     ) {}
 
     /**
@@ -48,6 +51,9 @@ class MailReservation extends Mailable
                 'apartmentTitle' => $this->apartmentTitle,
                 'arrival_date' => $this->arrival_date,
                 'departure_date' => $this->departure_date,
+                'apartment' => $this->apartment,
+                'total_price' => $this->total_price,
+                'reservation' => $this->reservation
             ],
         );
     }

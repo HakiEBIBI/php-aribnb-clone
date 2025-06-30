@@ -43,13 +43,18 @@ class ReservationController extends Controller
             'traveler_number' => $validated['traveler_number'],
         ]);
 
+        $total_price = $apartment->price_per_night * \Carbon\Carbon::parse($validated['arrival_date'])->diffInDays($validated['departure_date']);
+
         Mail::to(auth()->user()->email)->send(
             new MailReservation(
-                auth()->user()->name,
-                'created',
-                $apartment->title,
-                $reservation->arrival_date,
-                $reservation->departure_date
+                name: auth()->user()->name,
+                action: 'created',
+                apartmentTitle: $apartment->title,
+                arrival_date: $validated['arrival_date'],
+                departure_date: $validated['departure_date'],
+                apartment: $apartment,
+                total_price: $total_price,
+                reservation: $reservation
             )
         );
 
@@ -108,11 +113,14 @@ class ReservationController extends Controller
 
         Mail::to(auth()->user()->email)->send(
             new MailReservation(
-                auth()->user()->name,
-                'updated',
-                $reservation->apartment->title,
-                $arrival_date,
-                $departure_date
+                name: auth()->user()->name,
+                action: 'updated',
+                apartmentTitle: $reservation->apartment->title,
+                arrival_date: $arrival_date,
+                departure_date: $departure_date,
+                apartment: $reservation->apartment,
+                total_price: $reservation->apartment->price_per_night * \Carbon\Carbon::parse($arrival_date)->diffInDays($departure_date),
+                reservation: $reservation
             )
         );
 
@@ -132,20 +140,24 @@ class ReservationController extends Controller
         $arrival_date = $reservation->arrival_date;
         $departure_date = $reservation->departure_date;
 
+        $total_price = $apartment->price_per_night * \Carbon\Carbon::parse($arrival_date)->diffInDays($departure_date);
+
         $reservation->delete();
 
         Mail::to($user->email)->send(
             new MailReservation(
-                $user->name,
-                'deleted',
-                $apartment->title,
-                $arrival_date,
-                $departure_date
+                name: $user->name,
+                action: 'deleted',
+                apartmentTitle: $apartment->title,
+                arrival_date: $arrival_date,
+                departure_date: $departure_date,
+                apartment: $apartment,
+                total_price: $total_price,
+                reservation: $reservation
             )
         );
 
         return redirect()->route('accountDetail')
             ->with('success', 'Réservation supprimer avec succès.');
     }
-
 }
