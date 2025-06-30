@@ -12,19 +12,10 @@ return new class extends Migration {
                 $table->dropColumn('image');
             }
         });
-
-        Schema::create('images', function (Blueprint $table) {
-            $table->id();
-            $table->string('path');
-            $table->foreignId('apartment_id')->constrained()->onDelete('cascade');
-            $table->timestamps();
-        });
     }
 
     public function down(): void
     {
-        Schema::dropIfExists('images');
-
         Schema::table('apartments', function (Blueprint $table) {
             $table->string('image')->nullable();
         });
