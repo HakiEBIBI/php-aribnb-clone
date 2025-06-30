@@ -50,10 +50,10 @@
             <div style="margin-top: 15px; padding-top: 15px; border-top: 1px solid #eee;">
                 <p style="margin: 5px 0; color: #484848;">
                     <strong>Détails du prix</strong><br>
-                    Prix par nuit: {{ number_format($apartment->price_per_night, 2, ',', ' ') }} €<br>
+                    Prix par nuit: {{ round($apartment->price_per_night) }} €<br>
                     Nombre de nuits: {{ \Carbon\Carbon::parse($arrival_date)->diffInDays($departure_date) }}<br>
                     <span style="font-size: 18px; color: #FF5A5F; margin-top: 10px; display: block;">
-                            <strong>Prix total: {{ number_format($total_price, 2, ',', ' ') }} €</strong>
+                            <strong>Prix total: {{ round($total_price) }} €</strong>
                         </span>
                 </p>
             </div>
